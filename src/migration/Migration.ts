@@ -21,6 +21,11 @@ export class Migration {
     timestamp: number;
 
     /**
+     * Migration repeatable flag - states this migration should be executed based on hash change.
+     */
+    repeatable: number;
+
+    /**
      * Name of the migration (class name).
      */
     name: string;
@@ -34,10 +39,11 @@ export class Migration {
     // Constructor
     // -------------------------------------------------------------------------
 
-    constructor(id: number|undefined, timestamp: number, name: string, instance?: MigrationInterface) {
+    constructor(id: number|undefined, timestamp: number, name: string, repeatable: boolean, instance?: MigrationInterface) {
         this.id = id;
         this.timestamp = timestamp;
         this.name = name;
+        this.repeatable = this.repeatable;
         this.instance = instance;
     }
 

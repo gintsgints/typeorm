@@ -241,6 +241,11 @@ export class MigrationExecutor {
                             type: this.connection.driver.normalizeType({type: this.connection.driver.mappedDataTypes.migrationName}),
                             isNullable: false
                         },
+                        {
+                            name: "hash",
+                            type: this.connection.driver.normalizeType({type: this.connection.driver.mappedDataTypes.migrationHash}),
+                            isNullable: false
+                        },
                     ]
                 },
             ));
@@ -256,9 +261,9 @@ export class MigrationExecutor {
             .select()
             .from(this.migrationsTable, this.migrationsTableName)
             .getRawMany();
-
         return migrationsRaw.map(migrationRaw => {
-            return new Migration(parseInt(migrationRaw["id"]), parseInt(migrationRaw["timestamp"]), migrationRaw["name"]);
+          const repeatable = (migrationRaw["name"].substr(-1) === "R");
+          return new Migration(parseInt(migrationRaw["id"]), parseInt(migrationRaw["timestamp"]), migrationRaw["name"], repeatable);
         });
     }
 
@@ -269,10 +274,11 @@ export class MigrationExecutor {
         const migrations = this.connection.migrations.map(migration => {
             const migrationClassName = (migration.constructor as any).name;
             const migrationTimestamp = parseInt(migrationClassName.substr(-13));
+            const repeatable = (migrationClassName.substr(-1) === "R");
             if (!migrationTimestamp)
                 throw new Error(`${migrationClassName} migration name is wrong. Migration class name should have a UNIX timestamp appended. `);
 
-            return new Migration(undefined, migrationTimestamp, migrationClassName, migration);
+            return new Migration(undefined, migrationTimestamp, migrationClassName, repeatable, migration);
         });
 
         // sort them by timestamp

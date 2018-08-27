@@ -29,7 +29,9 @@ export function importClassesFromDirectories(directories: string[], formats = ["
             const dtsExtension = file.substring(file.length - 5, file.length);
             return formats.indexOf(PlatformTools.pathExtname(file)) !== -1 && dtsExtension !== ".d.ts";
         })
-        .map(file => PlatformTools.load(PlatformTools.pathResolve(file)));
+        .map(file => {
+            PlatformTools.load(PlatformTools.pathResolve(file));
+        });
 
     return loadFileClasses(dirs, []);
 }

@@ -149,6 +149,7 @@ export abstract class AbstractSqliteDriver implements Driver {
         treeLevel: "integer",
         migrationId: "integer",
         migrationName: "varchar",
+        migrationHash: "varchar",
         migrationTimestamp: "bigint",
         cacheId: "int",
         cacheIdentifier: "varchar",

@@ -167,6 +167,7 @@ export class SqlServerDriver implements Driver {
         treeLevel: "int",
         migrationId: "int",
         migrationName: "varchar",
+        migrationHash: "varchar",
         migrationTimestamp: "bigint",
         cacheId: "int",
         cacheIdentifier: "nvarchar",
