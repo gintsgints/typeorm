@@ -9,6 +9,7 @@ import {JoinTableMetadataArgs} from "./JoinTableMetadataArgs";
 import {JoinColumnMetadataArgs} from "./JoinColumnMetadataArgs";
 import {EmbeddedMetadataArgs} from "./EmbeddedMetadataArgs";
 import {EntitySubscriberMetadataArgs} from "./EntitySubscriberMetadataArgs";
+import {ExecutableMetadataArgs} from "./ExecutableMetadataArgs";
 import {RelationIdMetadataArgs} from "./RelationIdMetadataArgs";
 import {InheritanceMetadataArgs} from "./InheritanceMetadataArgs";
 import {DiscriminatorValueMetadataArgs} from "./DiscriminatorValueMetadataArgs";
@@ -39,6 +40,7 @@ export class MetadataArgsStorage {
     readonly transactionRepositories: TransactionRepositoryMetadataArgs[] = [];
     readonly namingStrategies: NamingStrategyMetadataArgs[] = [];
     readonly entitySubscribers: EntitySubscriberMetadataArgs[] = [];
+    readonly executables: ExecutableMetadataArgs[] = [];
     readonly indices: IndexMetadataArgs[] = [];
     readonly uniques: UniqueMetadataArgs[] = [];
     readonly checks: CheckMetadataArgs[] = [];

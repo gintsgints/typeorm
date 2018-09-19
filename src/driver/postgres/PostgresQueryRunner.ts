@@ -6,6 +6,7 @@ import {TableColumn} from "../../schema-builder/table/TableColumn";
 import {Table} from "../../schema-builder/table/Table";
 import {TableIndex} from "../../schema-builder/table/TableIndex";
 import {TableForeignKey} from "../../schema-builder/table/TableForeignKey";
+import {DbFunction} from "../../schema-builder/executables/DBFunction";
 import {QueryRunnerAlreadyReleasedError} from "../../error/QueryRunnerAlreadyReleasedError";
 import {PostgresDriver} from "./PostgresDriver";
 import {ReadStream} from "../../platform/PlatformTools";
@@ -24,7 +25,6 @@ import {IsolationLevel} from "../types/IsolationLevel";
  * Runs queries on a single postgres database connection.
  */
 export class PostgresQueryRunner extends BaseQueryRunner implements QueryRunner {
-
     // -------------------------------------------------------------------------
     // Public Implemented Properties
     // -------------------------------------------------------------------------
@@ -1133,6 +1133,19 @@ export class PostgresQueryRunner extends BaseQueryRunner implements QueryRunner 
     }
 
     /**
+     * Creates new Database function
+     */
+    async createDbFunction(funct: DbFunction): Promise<void> {
+        const up = `CREATE OR REPLACE FUNCTION "${funct.name}"(i integer) RETURNS integer AS $$
+            BEGIN
+            ${funct.body}
+            END;
+            $$ LANGUAGE plpgsql;`;
+        const down = `DROP FUNCTION "${funct.name}"(i integer)`;
+        await this.executeQueries(up, down);
+    }
+
+    /**
      * Creates a new indices
      */
     async createIndices(tableOrName: Table|string, indices: TableIndex[]): Promise<void> {
@@ -1500,6 +1513,41 @@ export class PostgresQueryRunner extends BaseQueryRunner implements QueryRunner 
             });
 
             return table;
+        }));
+    }
+
+    protected async loadDbFunctions(functionNames: string[]): Promise<DbFunction[]> {
+        // if no tables given then no need to proceed
+        if (!functionNames || !functionNames.length)
+            return [];
+
+        const currentSchemaQuery = await this.query(`SELECT * FROM current_schema()`);
+        const currentSchema = currentSchemaQuery[0]["current_schema"];
+
+        const functionsCondition = functionNames.map(functionNAme => {
+            let [schema, name] = functionNAme.split(".");
+            if (!name) {
+                name = schema;
+                schema = this.driver.options.schema || currentSchema;
+            }
+            return `("specific_schema" = '${schema}' AND "specific_name" = '${name}')`;
+        }).join(" OR ");
+        const functionsSql = `SELECT * FROM "information_schema"."routines" WHERE ` + functionsCondition;
+
+        const [dbFunctions]: ObjectLiteral[][] = await Promise.all([
+            this.query(functionsSql),
+        ]);
+
+        // if tables were not found in the db, no need to proceed
+        if (!dbFunctions.length)
+            return [];
+        
+        // create tables for loaded tables
+        return Promise.all(dbFunctions.map(async dbFunction => {
+            const mydbfunction = new DbFunction();
+            mydbfunction.name = dbFunction["table_name"];
+            mydbfunction.name = dbFunction["routine_definition"]; 
+            return mydbfunction;
         }));
     }
 

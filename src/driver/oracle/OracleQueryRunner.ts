@@ -6,6 +6,7 @@ import {TableColumn} from "../../schema-builder/table/TableColumn";
 import {Table} from "../../schema-builder/table/Table";
 import {TableForeignKey} from "../../schema-builder/table/TableForeignKey";
 import {TableIndex} from "../../schema-builder/table/TableIndex";
+import {DbFunction} from "../../schema-builder/executables/DBFunction";
 import {QueryRunnerAlreadyReleasedError} from "../../error/QueryRunnerAlreadyReleasedError";
 import {OracleDriver} from "./OracleDriver";
 import {ReadStream} from "../../platform/PlatformTools";
@@ -22,6 +23,9 @@ import {IsolationLevel} from "../types/IsolationLevel";
  * Runs queries on a single oracle database connection.
  */
 export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
+    createDbFunction(proc: DbFunction): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
 
     // -------------------------------------------------------------------------
     // Public Implemented Properties

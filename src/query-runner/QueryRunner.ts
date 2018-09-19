@@ -2,6 +2,7 @@ import {TableColumn} from "../schema-builder/table/TableColumn";
 import {Table} from "../schema-builder/table/Table";
 import {TableForeignKey} from "../schema-builder/table/TableForeignKey";
 import {TableIndex} from "../schema-builder/table/TableIndex";
+import {DbFunction} from "../schema-builder/executables/DBFunction";
 import {Connection} from "../connection/Connection";
 import {ReadStream} from "../platform/PlatformTools";
 import {EntityManager} from "../entity-manager/EntityManager";
@@ -53,6 +54,11 @@ export interface QueryRunner {
      * All synchronized tables in the database.
      */
     loadedTables: Table[];
+
+    /**
+     * All synchronized function in the database.
+     */
+    loadedDbFunctions: DbFunction[];
 
     /**
      * Creates/uses database connection from the connection pool to perform further operations.
@@ -123,6 +129,18 @@ export interface QueryRunner {
      * todo: make tableNames optional
      */
     getTables(tableNames: string[]): Promise<Table[]>;
+
+    /**
+     * Loads a table by a given name from the database.
+     */
+    getDbFunction(functionPath: string): Promise<DbFunction|undefined>;
+
+    /**
+     * Loads all tables from the database and returns them.
+     *
+     * todo: make tableNames optional
+     */
+    getDbFunctions(dbFunctions: string[]): Promise<DbFunction[]>;
 
     /**
      * Checks if a database with the given name exist.
@@ -310,6 +328,11 @@ export interface QueryRunner {
      * Drops indices.
      */
     dropIndices(table: Table|string, indices: TableIndex[]): Promise<void>;
+
+    /**
+     * Create or replace function
+     */
+    createDbFunction(funct: DbFunction): Promise<void>;
 
     /**
      * Clears all table contents.

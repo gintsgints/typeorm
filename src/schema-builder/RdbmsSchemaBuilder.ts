@@ -61,7 +61,9 @@ export class RdbmsSchemaBuilder implements SchemaBuilder {
         await this.queryRunner.startTransaction();
         try {
             const tablePaths = this.entityToSyncMetadatas.map(metadata => metadata.tablePath);
+            const dbFunctionPaths = this.entityToSyncMetadatas.map(metadata => metadata.dbFunctionPath);
             await this.queryRunner.getTables(tablePaths);
+            await this.queryRunner.getDbFunctions(dbFunctionPaths);
             await this.executeSchemaSyncOperationsInProperOrder();
 
             // if cache is enabled then perform cache-synchronization as well
@@ -139,6 +141,7 @@ export class RdbmsSchemaBuilder implements SchemaBuilder {
         await this.createNewChecks();
         await this.createCompositeUniqueConstraints();
         await this.createForeignKeys();
+        await this.createExecutables();
     }
 
     /**
@@ -531,6 +534,14 @@ export class RdbmsSchemaBuilder implements SchemaBuilder {
             this.connection.logger.logSchemaBuild(`creating a foreign keys: ${newKeys.map(key => key.name).join(", ")} on table "${table.name}"`);
             await this.queryRunner.createForeignKeys(table, dbForeignKeys);
         });
+    }
+
+    /**
+     * Creates executables 
+     */
+    protected async createExecutables(): Promise<void> {
+        // await this.queryRunner.loadedDbFunctions()
+        // await this.queryRunner.createDbFunction()
     }
 
     /**

@@ -148,6 +148,11 @@ export class EntityMetadata {
     schema?: string;
 
     /**
+     * Database function full path including database and schema
+     */
+    dbFunctionPath: string;
+
+    /**
      * Specifies a default order by used for queries from this table when no explicit order by is specified.
      */
     orderBy?: OrderByCondition;

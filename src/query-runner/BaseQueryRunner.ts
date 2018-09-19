@@ -2,6 +2,7 @@ import {SqlInMemory} from "../driver/SqlInMemory";
 import {PromiseUtils} from "../util/PromiseUtils";
 import {Connection} from "../connection/Connection";
 import {Table} from "../schema-builder/table/Table";
+import {DbFunction} from "../schema-builder/executables/DBFunction";
 import {EntityManager} from "../entity-manager/EntityManager";
 import {TableColumn} from "../schema-builder/table/TableColumn";
 import {Broadcaster} from "../subscriber/Broadcaster";
@@ -43,6 +44,11 @@ export abstract class BaseQueryRunner {
      * All synchronized tables in the database.
      */
     loadedTables: Table[] = [];
+
+    /**
+     * All synchronized function in the database.
+     */
+    loadedDbFunctions: DbFunction[];
 
     /**
      * Broadcaster used on this query runner to broadcast entity events.
@@ -89,6 +95,7 @@ export abstract class BaseQueryRunner {
     // -------------------------------------------------------------------------
 
     protected abstract async loadTables(tablePaths: string[]): Promise<Table[]>;
+    protected abstract async loadDbFunctions(functionPaths: string[]): Promise<DbFunction[]>;
 
     // -------------------------------------------------------------------------
     // Public Methods
@@ -108,6 +115,22 @@ export abstract class BaseQueryRunner {
     async getTables(tableNames: string[]): Promise<Table[]> {
         this.loadedTables = await this.loadTables(tableNames);
         return this.loadedTables;
+    }
+
+    /**
+     * Loads given database function's data from the database.
+     */
+    async getDbFunction(functionPath: string): Promise<DbFunction|undefined> {
+        this.loadedDbFunctions = await this.loadDbFunctions([functionPath]);
+        return this.loadedDbFunctions.length > 0 ? this.loadedDbFunctions[0] : undefined;
+    }
+
+    /**
+     * Loads all database functions (with given names) from the database.
+     */
+    async getDbFunctions(dbFunctionNames: string[]): Promise<DbFunction[]> {
+        this.loadedDbFunctions = await this.loadDbFunctions(dbFunctionNames);
+        return this.loadedDbFunctions;
     }
 
     /**

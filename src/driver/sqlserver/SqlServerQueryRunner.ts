@@ -24,6 +24,9 @@ import {IsolationLevel} from "../types/IsolationLevel";
  * Runs queries on a single SQL Server database connection.
  */
 export class SqlServerQueryRunner extends BaseQueryRunner implements QueryRunner {
+    createDbFunction(funct: import("c:/Users/gpolis/Documents/Private/typeorm/src/schema-builder/executables/DBFunction").DbFunction): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
 
     // -------------------------------------------------------------------------
     // Public Implemented Properties

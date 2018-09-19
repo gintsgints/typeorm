@@ -7,6 +7,7 @@ import {ColumnMetadata} from "../../metadata/ColumnMetadata";
 import {Table} from "../../schema-builder/table/Table";
 import {TableIndex} from "../../schema-builder/table/TableIndex";
 import {TableForeignKey} from "../../schema-builder/table/TableForeignKey";
+import {DbFunction} from "../../schema-builder/executables/DBFunction";
 import {AbstractSqliteDriver} from "./AbstractSqliteDriver";
 import {ReadStream} from "../../platform/PlatformTools";
 import {TableIndexOptions} from "../../schema-builder/options/TableIndexOptions";
@@ -20,6 +21,9 @@ import {IsolationLevel} from "../types/IsolationLevel";
  * Runs queries on a single sqlite database connection.
  */
 export abstract class AbstractSqliteQueryRunner extends BaseQueryRunner implements QueryRunner {
+    createDbFunction(func: DbFunction): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
 
     // -------------------------------------------------------------------------
     // Public Implemented Properties
